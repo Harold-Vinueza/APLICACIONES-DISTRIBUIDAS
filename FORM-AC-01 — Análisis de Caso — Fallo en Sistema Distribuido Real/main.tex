@@ -1,0 +1,119 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{trees, shapes.geometric, arrows}
+
+% --- CONFIGURACIÓN DE TÍTULOS ---
+\titleformat{\section}{\normalfont\bfseries}{\thesection.}{0.5em}{}
+
+\begin{document}
+
+% --- PÁGINA 1: CARÁTULA ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\bfseries\Large UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO \par}
+    \vspace{0.5cm}
+    {\large Facultad de Ciencias de la Computación y Diseño Digital \par}
+    {\large Carrera de Ingeniería de Software \par}
+    \vfill
+    {\bfseries\Large ANÁLISIS DE CASO: SISTEMAS DISTRIBUIDOS \par}
+    \vspace{0.5cm}
+    {\Large ``Fallo de Amazon Web Services us-east-1 (Abril 2011)'' \par}
+    \vfill
+    {\bfseries Integrantes: \par}
+    \vspace{0.3cm}
+    Bedón Viteri Keyla Betzabe \\
+    Castro López Pedro Leonardo \\
+    Emanuel Pino Juliana Romina \\
+    Vinueza Sánchez Harold Nicolás \\
+    \vfill
+    {\bfseries Asignatura: \par}
+    Aplicaciones Distribuidas (ISR-701) \\
+    Semana 3 - Unidad 1
+    \vfill
+    {\large Quevedo, Ecuador \par}
+    {\large 19 de mayo de 2026 \par}
+\end{titlepage}
+
+\newpage
+
+% --- PÁGINA 2: ANÁLISIS TÉCNICO ---
+\section{Descripción del Incidente}
+El 21 de abril de 2011, la región \textit{us-east-1} de AWS sufrió una interrupción de 96 horas originada por un error humano durante un cambio de red rutinario [2, 3]. El tráfico fue desviado erróneamente a una red de alta latencia, lo que provocó que los volúmenes de \textbf{Elastic Block Store (EBS)} perdieran sus réplicas e iniciaran procesos de re-espejado masivos [3]. La demanda simultánea saturó la capacidad de almacenamiento, generando una \textbf{``tormenta de re-espejado''} autoamplificada que dejó al sistema sin disponibilidad para priorizar la consistencia de los datos (modelo CP) [4, 5].
+
+\section{Identificación de Causas Raíz (Árbol de Fallos)}
+Mediante el análisis de los ``5 Porqués'', se determinó la siguiente estructura de fallos [6, 7]:
+
+\begin{center}
+\begin{tikzpicture}[
+    edge from parent/.style={draw,-latex},
+    level 1/.style={sibling distance=6cm, level distance=1.5cm},
+    level 2/.style={sibling distance=6cm, level distance=1.8cm},
+    every node/.style={rectangle, draw, align=center, font=\small, fill=gray!5}
+]
+\node {Fallo de Disponibilidad\\en us-east-1}
+    child { node {Saturación de\\capacidad crítica}
+        child { node {Re-espejado masivo\\simultáneo de EBS}
+            child { node {\textbf{CAUSA RAÍZ:}\\Ausencia de \textit{rate limiting}\\en la recuperación} }
+        }
+    }
+    child { node {Error Operativo\\en Cambio de Red}
+        child { node {Tráfico a red de\\alta latencia} 
+            child { node {Falta de plan de\\reversión verificado} }
+        }
+    };
+\end{tikzpicture}
+\end{center}
+
+\section{Impacto Cuantificado}
+El impacto del incidente fue severo y se resume en las siguientes métricas [8]:
+\begin{itemize}[noitemsep]
+    \item \textbf{Disponibilidad:} 96 horas de interrupción crítica del servicio.
+    \item \textbf{Instancias EC2:} 1.87\% de las instancias en la región quedaron inaccesibles permanentemente.
+    \item \textbf{Pérdida de Datos:} 0.07\% de los volúmenes EBS sufrieron pérdida irrecuperable.
+    \item \textbf{Ecosistema:} Caída total de servicios como Reddit, Foursquare y Quora.
+\end{itemize}
+
+\section{Estrategias de Mitigación y Lecciones Aprendidas}
+AWS y la industria adoptaron las siguientes estrategias tras el análisis post-mortem [7, 9]:
+\begin{enumerate}
+    \item \textbf{Rate Limiting y Backoff:} Implementación de límites de velocidad en procesos de recuperación para evitar saturaciones en cascada.
+    \item \textbf{Chaos Engineering:} Adopción de pruebas de inyección de fallos para validar la resiliencia antes de eventos reales.
+    \item \textbf{Diseño Multi-AZ:} Obligatoriedad de arquitecturas que no dependan de una única zona de disponibilidad.
+\end{enumerate}
+
+\section{Aplicación al Proyecto Fin de Curso (PFC)}
+Como equipo, aplicaremos las siguientes decisiones basadas en el caso [10, 11]:
+\begin{itemize}
+    \item \textbf{Definición CAP:} Documentar si el PFC prioriza consistencia o disponibilidad en el ADR.
+    \item \textbf{Circuit Breaker:} Implementar el patrón para evitar fallos en cascada entre microservicios.
+    \item \textbf{Resiliencia:} Realizar pruebas deteniendo contenedores Docker en la entrega final.
+\end{itemize}
+
+% --- BIBLIOGRAFÍA ---
+\begin{thebibliography}{9}
+\bibitem{aws2011} 
+Amazon Web Services, ``Summary of the Amazon EC2 and Amazon RDS Service Disruption in the US East Region,'' \textit{AWS Service Health Dashboard}, Abr. 2011. [Online]. Disponible: https://aws.amazon.com/message/65648/
+
+\bibitem{brewer2000} 
+E. Brewer, ``Towards robust distributed systems,'' en \textit{Proc. 19th ACM Symp. Principles Distributed Computing (PODC)}, Portland, OR, USA, Jul. 2000, p. 7. doi: 10.1145/343477.343502
+
+\bibitem{gilbert2002} 
+S. Gilbert y N. Lynch, ``Brewer's conjecture and the feasibility of consistent, available, partition-tolerant web services,'' \textit{ACM SIGACT News}, vol. 33, no. 2, pp. 51-59, Jun. 2002. doi: 10.1145/564585.564601
+
+\bibitem{steen2025} 
+M. van Steen y A. S. Tanenbaum, \textit{Distributed Systems}, 4ta ed. Maastricht, Países Bajos: Maarten van Steen, Ene. 2025, cap. 8 ``Fault Tolerance''.
+
+\bibitem{cristian1991} 
+F. Cristian, ``Understanding fault-tolerant distributed systems,'' \textit{Commun. ACM}, vol. 34, no. 2, pp. 56-78, Feb. 1991. doi: 10.1145/102792.102801
+
+\bibitem{chahal2014} 
+R. Chahal, ``The AWS US-East-1 outage: A Postmortem Analysis,'' \textit{IEEE Cloud Computing}, vol. 1, no. 2, pp. 12-18, Jun. 2014.
+\end{thebibliography}
+
+\end{document}
