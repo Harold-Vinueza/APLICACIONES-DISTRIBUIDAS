@@ -1,0 +1,548 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Codificación y fuentes ─────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+% ── Márgenes ──────────────────────────────────────────────────────────────
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Tablas y listas ───────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{longtable}
+
+% ── Color y cajas ─────────────────────────────────────────────────────────
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\definecolor{azulP}{RGB}{0,74,153}
+\definecolor{grisClaro}{RGB}{245,245,245}
+\definecolor{rojoAlerta}{RGB}{180,30,30}
+
+% ── TikZ ──────────────────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
+
+% ── Hipervínculos ─────────────────────────────────────────────────────────
+\usepackage[colorlinks=true, linkcolor=azulP,
+            citecolor=azulP, urlcolor=azulP]{hyperref}
+\usepackage{url}
+\usepackage{doi}   % renderiza el campo doi como enlace clicable en IEEEtran
+
+% ── Bibliografía IEEE ─────────────────────────────────────────────────────
+\usepackage[numbers, sort&compress]{natbib}
+\bibliographystyle{IEEEtran}
+
+% ── Cabecera / pie ────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{azulP}{Aplicaciones Distribuidas --- Unidad 1}}
+\fancyhead[R]{\small\textcolor{azulP}{Vinueza S\'anchez Harold N\'icolas}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Formato de secciones ──────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{azulP}\large\bfseries}{\thesection}{1em}{}[\color{azulP}\titlerule]
+\titleformat{\subsection}
+  {\color{azulP}\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\color{azulP}\small\bfseries\itshape}{\thesubsubsection}{1em}{}
+
+% ══════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── PORTADA ───────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{0.5cm}
+
+  {\color{azulP}\rule{\linewidth}{2pt}}\\[0.4cm]
+  {\LARGE\bfseries\color{azulP}
+    An\'alisis Cr\'itico Comparativo del Sistema\\[0.25cm]
+    Bancario Digital de Banco Pichincha\\[0.2cm]
+    como Sistema Distribuido Real}\\[0.35cm]
+  {\color{azulP}\rule{\linewidth}{2pt}}
+
+  \vspace{1.2cm}
+
+  % ── Tabla de datos institucionales ──────────────────────────────────────
+  \begin{tcolorbox}[colback=grisClaro, colframe=azulP, arc=4mm,
+                    title={\bfseries Informaci\'on Acad\'emica e Institucional}]
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{@{} p{4.5cm} p{8.5cm} @{}}
+      \textbf{Universidad}   & Universidad T\'ecnica Estatal de Quevedo \\
+      \textbf{Facultad}      & Facultad de Ciencia de la Computaci\'on y Dise\~no Digital \\
+      \textbf{Carrera}       & Software \\
+      \textbf{Asignatura}    & Aplicaciones Distribuidas \\
+      \textbf{Docente}       & Ing. Gleiston Ciceron Guerrero Ulloa \\
+      \textbf{Actividad}     & TA-IND-01 --- Informe Acad\'emico Individual --- An\'alisis Cr\'itico de Sistemas Distribuidos (Unidad~1) \\
+      \textbf{Estudiante}    & Vinueza S\'anchez Harold N\'icolas \\
+      \textbf{A\~no Lectivo} & 2026--2027 \textbf{PPA} \\
+      \textbf{Fecha}         & \today \\
+    \end{tabular}
+  \end{tcolorbox}
+
+  \vspace{1cm}
+
+  \begin{tcolorbox}[colback=azulP!8, colframe=azulP, arc=4mm, width=0.92\linewidth]
+    \centering\small\itshape
+    ``El 10 de octubre de 2021, Banco Pichincha notific\'o a la Superintendencia de
+    Bancos sobre un incidente que inhabilit\'o sus canales digitales durante m\'as
+    de 72 horas continuadas.''\\[0.25cm]
+    \upshape\small --- Superintendencia de Bancos del Ecuador \cite{SuperbancosIncidente2021}
+  \end{tcolorbox}
+
+  \vfill
+  {\small\textcolor{gray}{Universidad T\'ecnica Estatal de Quevedo --- Ecuador, Los R\'ios, \the\year}}
+\end{titlepage}
+
+% ── TABLA DE CONTENIDOS ──────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Introducci\'on}
+% ══════════════════════════════════════════════════════════════════════════
+
+Los sistemas distribuidos constituyen la columna vertebral de la infraestructura digital moderna. Seg\'un Coulouris \textit{et al.} \cite{Coulouris2011}, un sistema distribuido es aquel en el que componentes de hardware o software ubicados en computadoras en red se comunican y coordinan sus acciones \'unicamente mediante paso de mensajes. Esta definici\'on describe con precisi\'on la arquitectura que sustenta la banca digital contempor\'anea.
+
+Banco Pichincha C.A. ---fundado en 1906 y banco privado m\'as grande del Ecuador por capitalizaci\'on y n\'umero de depositantes \cite{BancoPichincha2025}--- opera una plataforma de banca digital que integra aplicaci\'on m\'ovil, banca web, cajeros autom\'aticos (ATM), corresponsales bancarios y terminales punto de venta. Esta plataforma constituye un sistema distribuido de escala nacional con millones de transacciones diarias, desde Quito hasta localidades rurales de Los R\'ios.
+
+El presente trabajo realiza un \textbf{an\'alisis cr\'itico comparativo} aplicando los cuatro ejes de la Unidad 1: transparencias de distribuci\'on, modelo CAP, modelos de comunicaci\'on y tolerancia a fallos. El an\'alisis cobra especial relevancia ante los incidentes documentados de octubre de 2021 y julio de 2025, en los que la plataforma sufri\'o interrupciones prolongadas que derivaron en procesos administrativos sancionadores de la Superintendencia de Bancos \cite{SuperbancosIncidente2021, SuperbancosSancion2025}.
+
+\subsection{Objetivos}
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=2pt]
+  \item Identificar y clasificar las transparencias de distribuci\'on del sistema.
+  \item Aplicar el modelo CAP y evaluar cr\'iticamente las decisiones de dise\~no a la luz de los incidentes reales.
+  \item Analizar los modelos de comunicaci\'on de la arquitectura distribuida.
+  \item Evaluar los mecanismos de tolerancia a fallos y sus limitaciones evidenciadas.
+  \item Formular recomendaciones de mejora sustentadas en literatura acad\'emica.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Descripci\'on del Sistema Distribuido}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Contexto institucional}
+
+Banco Pichincha opera en todas las provincias del Ecuador con representaciones internacionales en Per\'u, Colombia, Panam\'a, Espa\~na y Miami. Su plataforma digital evolucion\'o desde el sistema \textit{INTERNEXO} (sucesor de \textit{TODO1}), implementado a partir de un contrato suscrito en 2007 \cite{BancoPichincha2025}.
+
+\subsection{Arquitectura de microservicios distribuidos}
+
+La plataforma sigue una arquitectura de \textbf{microservicios distribuidos} en la que cada servicio puede desarrollarse, desplegarse y escalarse de forma independiente \cite{Poniszewska2020}. Esta transici\'on desde arquitecturas monol\'iticas es una tendencia consolidada en el sector bancario global \cite{BucchiaroneMonolith2018}. La Figura~\ref{fig:arq} ilustra la arquitectura l\'ogica simplificada.
+
+\vspace{0.4cm}
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle, rounded corners=3pt, draw=azulP, fill=azulP!10,
+              minimum width=2.1cm, minimum height=0.85cm, align=center,
+              text width=1.95cm, font=\small},
+  cloud/.style={ellipse, draw=gray!60, fill=gray!8, minimum width=1.75cm,
+                minimum height=0.65cm, align=center, font=\scriptsize},
+  arr/.style={-{Stealth[length=2.5mm]}, thick, azulP}
+]
+\node[cloud] (mov) at (0,4)    {App\\M\'ovil};
+\node[cloud] (web) at (2.2,4)  {Banca\\Web};
+\node[cloud] (atm) at (4.4,4)  {Cajeros\\ATM};
+\node[cloud] (cor) at (6.8,4)  {Correspon-\\sales};
+
+\node[box, fill=azulP!22, minimum width=7.4cm, text width=7.1cm]
+  (gw) at (3.4,2.65) {API Gateway / Balanceador de Carga};
+
+\node[box] (aut) at (0.2,1.25) {Servicio\\Autenticaci\'on};
+\node[box] (txn) at (2.5,1.25) {Servicio\\Transacciones};
+\node[box] (not) at (4.8,1.25) {Servicio\\Notificaciones};
+\node[box] (cta) at (7.0,1.25) {Servicio\\Cuentas};
+
+\node[box, fill=green!8, draw=green!50!black, font=\scriptsize]
+  (db1) at (0.2,-0.25) {BD\\R\'eplica~1};
+\node[box, fill=green!8, draw=green!50!black, font=\scriptsize]
+  (db2) at (2.5,-0.25) {BD\\R\'eplica~2};
+\node[box, fill=green!8, draw=green!50!black, font=\scriptsize]
+  (db3) at (4.8,-0.25) {BD\\R\'eplica~3};
+\node[box, fill=orange!8, draw=orange!65, font=\scriptsize]
+  (red) at (7.0,-0.25) {Cach\'e\\Redis};
+
+\foreach \s in {mov,web,atm,cor} \draw[arr] (\s) -- (gw);
+\foreach \s in {aut,txn,not,cta} \draw[arr] (gw) -- (\s);
+\draw[arr] (aut)--(db1); \draw[arr] (txn)--(db2);
+\draw[arr] (not)--(db3); \draw[arr] (cta)--(red);
+\end{tikzpicture}
+\caption{Arquitectura l\'ogica simplificada del sistema bancario digital de Banco Pichincha.}
+\label{fig:arq}
+\end{figure}
+
+La Superintendencia de Bancos confirm\'o que en el incidente de octubre de 2021 los cinco canales de distribuci\'on resultaron afectados simult\'aneamente \cite{SuperbancosCanales2021}.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Transparencias de Distribuci\'on}
+% ══════════════════════════════════════════════════════════════════════════
+
+Coulouris \textit{et al.} \cite{Coulouris2011} definen ocho formas de transparencia de distribuci\'on seg\'un el est\'andar ISO/IEC 10746 (RM-ODP). A continuaci\'on se analiza cada una en el contexto del sistema de Banco Pichincha.
+
+\subsubsection{Transparencia de Acceso}
+El usuario accede a sus cuentas mediante una interfaz uniforme, independientemente del nodo que procesa la solicitud. Esta transparencia se materializ\'o parcialmente durante el incidente de 2021: aunque los canales digitales fallaron, los cajeros funcionaban en agencias f\'isicas \cite{ElUniverso2021}, revelando que la transparencia de acceso era incompleta entre canales heterog\'eneos.
+
+\subsubsection{Transparencia de Ubicaci\'on}
+El cliente no necesita conocer la ubicaci\'on f\'isica del servidor. Sin embargo, cuando el data center alterno present\'o problemas durante las pruebas del 8 y 9 de octubre \cite{SuperbancosIncidente2021}, el sistema no logr\'o ocultar la indisponibilidad, violando esta transparencia.
+
+\subsubsection{Transparencia de Replicaci\'on}
+La arquitectura replica bases de datos para garantizar disponibilidad. No obstante, la replicaci\'on result\'o insuficiente cuando el ciberataque comprometi\'o simult\'aneamente el data center principal y el alterno \cite{SuperbancosIncidente2021}. Darem \textit{et al.} \cite{DaremCyberThreats2023} clasifican estos ataques coordinados como amenazas de alta complejidad que exigen redundancia geogr\'aficamente aislada. Kirti \textit{et al.} \cite{KirtiFaultTolerance2024} se\~nalan que los sistemas bancarios deben contemplar fallos coordinados (\textit{correlated failures}), precisamente el escenario observado.
+
+\subsubsection{Transparencia de Fallos}
+Es la transparencia m\'as comprometida. Un sistema verdaderamente transparente a fallos permite completar las tareas aunque componentes individuales fallen \cite{Coulouris2011}. La ca\'ida de m\'as de 72 horas \cite{DefensoriaPueblo2021} demuestra que los mecanismos de enmascaramiento de fallos fueron insuficientes. La Defensor\'ia del Pueblo calific\'o el evento como vulneraci\'on de los derechos de los usuarios financieros.
+
+\subsubsection{Transparencia de Concurrencia y Escalado}
+El sistema gestiona millones de transacciones concurrentes de forma transparente al usuario. Sin embargo, en julio de 2025 la Superintendencia report\'o intermitencias posiblemente atribuibles a alta demanda transaccional \cite{Ecuavisa2025}, cuestionando la transparencia de escalado.
+
+\begin{tcolorbox}[colback=azulP!5, colframe=azulP,
+                  title={\bfseries Evaluaci\'on Cr\'itica de Transparencias}]
+De las ocho transparencias del est\'andar RM-ODP \cite{Coulouris2011}, Banco Pichincha implementa correctamente las de acceso, ubicaci\'on, concurrencia y escalado en condiciones normales. Las transparencias de \textbf{replicaci\'on} y \textbf{fallos} presentaron deficiencias significativas documentadas en los incidentes de 2021 y 2025, constituyendo el principal vector de mejora del sistema.
+\end{tcolorbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Modelo CAP}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Fundamento te\'orico}
+
+El Teorema CAP, postulado por Brewer \cite{Brewer2000} y formalmente demostrado por Gilbert y Lynch \cite{GilbertLynch2002} (\textit{ACM SIGACT News}, DOI:~\href{https://doi.org/10.1145/564585.564601}{10.1145/564585.564601}), establece que todo sistema distribuido que comparte datos solo puede garantizar simult\'aneamente \textbf{dos} de las siguientes tres propiedades:
+
+\begin{itemize}[leftmargin=1.5cm]
+  \item \textbf{Consistencia (C):} todos los nodos observan los mismos datos al mismo tiempo.
+  \item \textbf{Disponibilidad (A):} toda solicitud recibe respuesta, aunque no con los datos m\'as recientes.
+  \item \textbf{Tolerancia a Particiones (P):} el sistema opera aunque fallen las comunicaciones entre nodos.
+\end{itemize}
+
+\subsection{Clasificaci\'on CAP por tipo de operaci\'on}
+
+\begin{table}[ht]
+\centering
+\caption{Clasificaci\'on CAP del sistema bancario digital de Banco Pichincha.}
+\label{tab:cap}
+\begin{tabularx}{\textwidth}{lXXX}
+\toprule
+\textbf{Operaci\'on} & \textbf{Consistencia} & \textbf{Disponibilidad} & \textbf{Partici\'on} \\
+\midrule
+Transferencias / pagos     & Alta --- CP   & Sacrificada & Alta \\
+Consulta de saldo          & Media --- AP  & Alta        & Alta \\
+Notificaciones \textit{push} & Eventual    & Alta        & Alta \\
+Pagos interbancarios       & Alta --- CP   & Sacrificada & Media \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El sistema adopta una estrategia h\'ibrida coherente con las mejores pr\'acticas del sector \cite{Mickoservicesbanking2025}: CP para operaciones cr\'iticas y AP para consultas informativas.
+
+\subsection{An\'alisis cr\'itico: el incidente de 2021 como ruptura total}
+
+\begin{tcolorbox}[colback=red!4, colframe=rojoAlerta,
+                  title={\bfseries Caso Cr\'itico --- Octubre 2021: Ruptura del Modelo CAP}]
+El ciberataque de octubre de 2021 constituye una ruptura total del modelo CAP: el sistema no pudo garantizar ni consistencia, ni disponibilidad, ni tolerancia a particiones, pues el agente de fallo comprometi\'o simult\'aneamente el data center principal y el alterno~\cite{SuperbancosIncidente2021}. El teorema CAP asume particiones de red convencionales, no ataques coordinados multi-nodo~\cite{GilbertLynch2002}.
+\end{tcolorbox}
+
+Esta limitaci\'on confirma que el an\'alisis CAP, siendo necesario, resulta insuficiente por s\'i solo para modelar la resiliencia bancaria frente a amenazas avanzadas persistentes (APT). Brewer \cite{Brewer2000} reconoci\'o que los sistemas robustos deben contemplar modelos de fallo m\'as amplios que las particiones cl\'asicas de red.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Modelos de Comunicaci\'on}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Comunicaci\'on s\'incrona cliente-servidor (REST/HTTPS)}
+
+El modelo predominante en la capa de usuario es la comunicaci\'on s\'incrona mediante APIs RESTful sobre HTTPS. Coulouris \textit{et al.} \cite{Coulouris2011} clasifican este patr\'on como \textit{invocaci\'on remota}; su limitaci\'on principal es el acoplamiento temporal: si el servidor no responde, el cliente queda bloqueado. Durante el incidente, los usuarios reportaban que la app ``solo permit\'ia revisar el saldo y luego ya no ten\'ia acceso'' \cite{ElUniverso2025}, evidenciando este bloqueo ante la ausencia de un \textit{circuit breaker} efectivo.
+
+\subsection{Comunicaci\'on as\'incrona y colas de mensajes}
+
+Para procesos de alto volumen ---lotes de transacciones, extractos, notificaciones \textit{push}--- se utilizan colas de mensajes as\'incronas \cite{DesignPatterns2024}. Este modelo desacopla temporalmente al productor del consumidor, dotando al sistema de mayor resiliencia ante fallos parciales. Las notificaciones SMS continuaron operando parcialmente durante el incidente de 2021, evidencia de este desacoplamiento.
+
+\subsection{Protocolo ISO 8583 para redes interbancarias}
+
+Las transacciones con Visa, Mastercard y la red de pagos interbancarios del Ecuador emplean el est\'andar \textbf{ISO 8583}, un protocolo de mensajer\'ia financiera de formato fijo con acuse de recibo (\textit{request-response}), que garantiza la trazabilidad individual de cada transacci\'on.
+
+\subsection{Modelo \textit{publish-subscribe} para notificaciones}
+
+Las alertas en tiempo real implementan un modelo \textit{publish-subscribe}: el servicio de transacciones publica eventos que el servicio de notificaciones consume para distribuirlos v\'ia SMS o \textit{push notification}. Este patr\'on reduce el acoplamiento entre microservicios \cite{DesignPatterns2024} y es el que mayor disponibilidad mantuvo durante los incidentes documentados.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Tolerancia a Fallos}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Mecanismos declarados}
+
+Ledmi \textit{et al.} \cite{LedmiFaultTolerance2018} clasifican la tolerancia a fallos en t\'ecnicas \textbf{reactivas} (detectar y recuperar) y \textbf{proactivas} (anticipar y prevenir). El banco y el regulador declaran los siguientes mecanismos \cite{SuperbancosIncidente2021, SuperbancosSancion2025}:
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=3pt]
+  \item \textbf{Data center alterno:} replicaci\'on geogr\'afica para recuperaci\'on ante desastres.
+  \item \textbf{Plan de Estabilizaci\'on Tecnol\'ogica (PET):} exigido por la Superintendencia desde 2019.
+  \item \textbf{Plan de Continuidad del Negocio (BCP):} procedimientos para mantener servicios cr\'iticos durante incidentes.
+  \item \textbf{Supervisi\'on Basada en Riesgos (SBR):} metodolog\'ia de control regulatorio continuo.
+\end{enumerate}
+
+\subsection{Cronolog\'ia de incidentes documentados}
+
+\begin{table}[ht]
+\centering
+\caption{Incidentes oficialmente documentados en el sistema distribuido de Banco Pichincha (2021--2025).}
+\label{tab:incidentes}
+\begin{tabularx}{\textwidth}{lllX}
+\toprule
+\textbf{Fecha} & \textbf{Duraci\'on} & \textbf{Tipo} & \textbf{Fuente principal} \\
+\midrule
+Feb.\ 2021        & N/D     & Brecha de datos (proveedor)      & \cite{DaremCyberThreats2023} \\
+Oct.\ 8--16, 2021 & $>$72~h & Ciberataque --- 5 canales afect. & \cite{SuperbancosIncidente2021} \\
+May.\ 2023        & Horas   & Intermitencia banca m\'ovil      & \cite{EcuadorChequea2023} \\
+Jun.\ 30, 2025    & 13~h    & Falla t\'ecnica banca virtual    & \cite{Ecuavisa2025} \\
+Jul.\ 2025        & Horas   & Proceso sancionador iniciado     & \cite{SuperbancosSancion2025} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La reincidencia (Tabla~\ref{tab:incidentes}) revela una debilidad estructural. Kirti \textit{et al.} \cite{KirtiFaultTolerance2024} establecen que los sistemas financieros cr\'iticos deben alcanzar \textit{five nines} (99,999~\%) de disponibilidad, equivalente a menos de 5,26~minutos de inactividad anual. Una interrupci\'on de 72~horas implica una disponibilidad de $\approx99{,}18$~\% en 2021, muy por debajo del est\'andar de la industria.
+
+\subsection{Carencia del patr\'on \textit{Circuit Breaker}}
+
+La afectaci\'on simult\'anea de los cinco canales en 2021 sugiere una falla en cascada (\textit{cascading failure}), asociada a la ausencia o insuficiencia del patr\'on \textit{Circuit Breaker} \cite{DesignPatterns2024}. Este patr\'on a\'isla el fallo de un microservicio para impedir su propagaci\'on al resto del sistema.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{An\'alisis Comparativo y Cr\'itica}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Fortalezas del sistema}
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=2pt]
+  \item Cobertura nacional multicanal: digital, f\'isico y corresponsal.
+  \item Cumplimiento del marco regulatorio de la Superintendencia de Bancos.
+  \item Arquitectura de microservicios con despliegues independientes \cite{Poniszewska2020}.
+  \item Existencia de data center alterno como base de recuperaci\'on ante desastres.
+\end{itemize}
+
+\subsection{Debilidades identificadas}
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=2pt]
+  \item Transparencia de fallos insuficiente: los incidentes son visibles al usuario durante horas o d\'ias.
+  \item Ausencia de \textit{circuit breakers} efectivos entre microservicios.
+  \item Falta de degradaci\'on gradual (\textit{graceful degradation}) propuesta por Brewer \cite{Brewer2000} como imperativo de dise\~no en sistemas robustos.
+  \item Reincidencia de fallos (2021, 2023, 2025) que indica problemas sist\'emicos no resueltos.
+\end{itemize}
+
+\subsection{Comparaci\'on con sistemas de referencia}
+
+Amazon DynamoDB prioriza la disponibilidad con consistencia eventual (AP), lo que le permite absorber particiones sin interrupciones visibles para el usuario. Banco Pichincha, por su exigencia de consistencia fuerte en operaciones financieras, es inherentemente m\'as vulnerable ante fallos, lo que hace m\'as cr\'itica la implementaci\'on de mecanismos robustos de recuperaci\'on \cite{Mickoservicesbanking2025, GilbertLynch2002}.
+
+Google Spanner intenta superar la dicotom\'ia CAP mediante sincronizaci\'on global de tiempo (TrueTime API), una referencia inspiradora para el sector financiero ecuatoriano, aunque su escala de implementaci\'on excede la capacidad actual del mercado local.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Recomendaciones}
+% ══════════════════════════════════════════════════════════════════════════
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=4pt]
+
+  \item \textbf{Implementar \textit{Circuit Breaker} y \textit{Bulkhead}:} a\'islar los fallos entre microservicios para prevenir propagaci\'on en cascada \cite{DesignPatterns2024}. De haber existido en 2021, el impacto habr\'ia quedado circunscrito a un solo canal.
+
+  \item \textbf{Adoptar degradaci\'on gradual:} ante fallos parciales, mantener funciones cr\'iticas (consulta de saldo, transferencias de emergencia) y suspender funciones secundarias (historial extendido, configuraci\'on de alertas) \cite{Brewer2000}.
+
+  \item \textbf{Consistencia eventual selectiva:} para consultas e informes, migrar a un modelo AP que priorice disponibilidad sin comprometer la integridad de operaciones cr\'iticas \cite{GilbertLynch2002}.
+
+  \item \textbf{Aislamiento total del data center alterno:} garantizar que no comparta ning\'un componente de red o software con el data center principal, eliminando el punto \'unico de fallo evidenciado en 2021 \cite{KirtiFaultTolerance2024}.
+
+  \item \textbf{SLA de \textit{five nines} con monitorizaci\'on continua:} implementar alertas autom\'aticas y reportes trimestrales a la Superintendencia, alineados con la Supervisi\'on Basada en Riesgos vigente desde 2019 \cite{SuperbancosIncidente2021}.
+
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Conclusiones}
+% ══════════════════════════════════════════════════════════════════════════
+
+El sistema bancario digital de Banco Pichincha es un caso de estudio privilegiado para la asignatura de Aplicaciones Distribuidas: combina escala real, documentaci\'on oficial del regulador ecuatoriano e incidentes verificables que permiten contrastar la teor\'ia con la pr\'actica.
+
+El an\'alisis evidenci\'o que el sistema implementa correctamente las transparencias de acceso, ubicaci\'on, concurrencia y escalado bajo condiciones normales, pero presenta deficiencias cr\'iticas en \textbf{replicaci\'on} y \textbf{fallos} ante escenarios adversos. El modelo CAP \cite{GilbertLynch2002} muestra que la estrategia h\'ibrida adoptada es t\'ecnicamente correcta, pero su implementaci\'on no alcanza los est\'andares de resiliencia de la industria financiera global, como lo confirma la reincidencia de fallos entre 2021 y 2025.
+
+La ausencia de mecanismos de degradaci\'on gradual y \textit{circuit breaking} permiti\'o que fallos localizados se propagaran hasta comprometer todos los canales simult\'aneamente \cite{SuperbancosCanales2021, DefensoriaPueblo2021}. Este caso demuestra que las transparencias de distribuci\'on y el teorema CAP no son abstracciones acad\'emicas, sino imperativos de dise\~no con consecuencias directas sobre los derechos de millones de ciudadanos ecuatorianos.
+
+% ── REFERENCIAS ──────────────────────────────────────────────────────────
+\newpage
+\bibliography{referencias}
+
+% ══════════════════════════════════════════════════════════════════════════
+\newpage
+\section*{Referencias Bibliogr\'aficas con DOI}
+\addcontentsline{toc}{section}{Referencias Bibliogr\'aficas con DOI}
+% ══════════════════════════════════════════════════════════════════════════
+
+\noindent A continuaci\'on se listan las fuentes acad\'emicas con DOI verificado
+de bases de datos reconocidas (IEEE~Xplore, ACM~Digital~Library, Springer,
+Wiley), seguidas de las fuentes institucionales y period\'isticas empleadas
+como evidencia del caso.
+
+\vspace{0.5cm}
+\noindent\textbf{\color{azulP}--- Fuentes acad\'emicas con DOI (bases de datos indexadas) ---}
+\vspace{0.2cm}
+
+\begin{enumerate}[leftmargin=0.6cm, label={[\arabic*]}, itemsep=6pt]
+
+  \item G.~Coulouris, J.~Dollimore, T.~Kindberg y G.~Blair,
+        \textit{Distributed Systems: Concepts and Design}, 5.ª~ed.
+        Boston, MA: Addison-Wesley, 2011.
+        ISBN: 978-0-132-14301-1.
+
+  \item E.~A.~Brewer,
+        ``Towards Robust Distributed Systems,''
+        en \textit{Proc. 19th Annu. ACM Symp. Principles of Distributed
+        Computing (PODC)}, Portland, OR, USA, 2000, p.~7.\\
+        \textbf{DOI:}~\href{https://doi.org/10.1145/343477.343502}%
+        {\texttt{10.1145/343477.343502}} \textnormal{[ACM Digital Library]}
+
+  \item S.~Gilbert y N.~Lynch,
+        ``Brewer's Conjecture and the Feasibility of Consistent, Available,
+        Partition-Tolerant Web Services,''
+        \textit{ACM SIGACT News}, vol.~33, n.º~2, pp.~51--59, jun. 2002.\\
+        \textbf{DOI:}~\href{https://doi.org/10.1145/564585.564601}%
+        {\texttt{10.1145/564585.564601}} \textnormal{[ACM Digital Library]}
+
+  \item A.~Poniszewska-Maranda, P.~Vesely, O.~Urikova e I.~Ivanochko,
+        ``Building Microservices Architecture for Smart Banking,''
+        en \textit{Proc. 11th Int. Conf. Intelligent Networking and
+        Collaborative Systems (INCoS 2019)}, serie \textit{Advances in
+        Intelligent Systems and Computing}, vol.~1035, pp.~514--525.
+        Cham, Switzerland: Springer, 2020.\\
+        \textbf{DOI:}~\href{https://doi.org/10.1007/978-3-030-29035-1_52}%
+        {\texttt{10.1007/978-3-030-29035-1\_52}} \textnormal{[Springer]}
+
+  \item D.~G.~Gil y R.~A.~Diaz-Heredero,
+        ``A Microservices Experience in the Banking Industry,''
+        en \textit{Proc. 12th Eur. Conf. Software Architecture: Companion
+        Proc. (ECSA 2018)}, pp.~1--2. New York, NY: ACM, 2018.\\
+        \textbf{DOI:}~\href{https://doi.org/10.1145/3241403.3241418}%
+        {\texttt{10.1145/3241403.3241418}} \textnormal{[ACM Digital Library]}
+
+  \item S.~Arjun y K.~Priya,
+        ``Design Patterns for Scalable Microservices in Banking and Insurance
+        Systems,''
+        \textit{Int.\ J. Emerging Research in Engineering and Technology
+        (IJERET)}, vol.~2, n.º~1, 2024. ISSN: 3050-922X.\\
+        \textbf{DOI:}~\href{https://doi.org/10.63282/3050-922X/IJERET-V2I1P103}%
+        {\texttt{10.63282/3050-922X/IJERET-V2I1P103}}
+
+  \item C.~Okafor, A.~Adeyemi e I.~Nwosu,
+        ``Microservices Architecture in Financial Services: Enabling Real-Time
+        Transaction Processing and Enhanced Scalability,''
+        \textit{Eur.\ J. Computer Science and Information Technology},
+        vol.~13, n.º~3, 2025. ISSN: 2054-0965.\\
+        \textbf{DOI:}~\href{https://doi.org/10.37745/ejcsit.2013}%
+        {\texttt{10.37745/ejcsit.2013}}
+
+  \item A.~Ledmi, H.~Bendjenna y S.~M.~Hemam,
+        ``Fault Tolerance in Distributed Systems: A Survey,''
+        en \textit{Proc. 3rd Int. Conf. Pattern Analysis and Intelligent
+        Systems (PAIS 2018)}, pp.~1--5. IEEE, 2018.\\
+        \textbf{DOI:}~\href{https://doi.org/10.1109/PAIS.2018.8598484}%
+        {\texttt{10.1109/PAIS.2018.8598484}} \textnormal{[IEEE Xplore]}
+
+  \item Kirti, P.~S.~Rana y A.~Sharma,
+        ``Fault-Tolerance Approaches for Distributed and Cloud Computing
+        Environments: A Systematic Review, Taxonomy and Future Directions,''
+        \textit{Concurrency and Computation: Practice and Experience}.
+        Wiley, 2024.\\
+        \textbf{DOI:}~\href{https://doi.org/10.1002/cpe.8081}%
+        {\texttt{10.1002/cpe.8081}} \textnormal{[Wiley / Scopus]}
+
+  \item A.~A.~Darem, A.~A.~Alhashmi, T.~M.~Alkhaldi, A.~M.~Alashjaee,
+        S.~M.~Alanazi y S.~A.~Ebad,
+        ``Cyber Threats Classifications and Countermeasures in Banking and
+        Financial Sector,''
+        \textit{IEEE Access}, vol.~11, pp.~125138--125158, 2023.\\
+        \textbf{DOI:}~\href{https://doi.org/10.1109/ACCESS.2023.3327016}%
+        {\texttt{10.1109/ACCESS.2023.3327016}} \textnormal{[IEEE Xplore]}
+
+\end{enumerate}
+
+\vspace{0.5cm}
+\noindent\textbf{\color{azulP}--- Fuentes institucionales y regulatorias (sin DOI) ---}
+\vspace{0.2cm}
+
+\begin{enumerate}[leftmargin=0.6cm, label={[\arabic*]},
+                  start=11, itemsep=6pt]
+
+  \item Superintendencia de Bancos del Ecuador,
+        ``Acciones de la Superintendencia de Bancos frente a Ciberataque de
+        entidad controlada,'' Comunicado oficial, oct. 2021.
+        Disponible en:
+        \url{https://www.superbancos.gob.ec/bancos/acciones-de-la-super-de-bancos-frente-a-ciberataque-de-entidad-controlada/}
+
+  \item Superintendencia de Bancos del Ecuador,
+        ``Intermitencias en Canales de Atenci\'on del Banco Pichincha C.A.,''
+        Comunicado oficial, oct. 2021.
+        Disponible en:
+        \url{https://www.superbancos.gob.ec/bancos/intermitencias-en-canales-de-atencion-del-banco-pichincha-c-a/}
+
+  \item Superintendencia de Bancos del Ecuador,
+        ``Sistema Financiero Estable y Seguro: Medidas Firmes ante Situaci\'on
+        en Banco Pichincha,'' Comunicado oficial, ago. 2025.
+        Disponible en:
+        \url{https://www.superbancos.gob.ec/bancos/sistema-financiero-estable-y-seguro-medidas-firmes-ante-situacion-en-banco-pichincha/}
+
+  \item Defensor\'ia del Pueblo del Ecuador,
+        ``Pronunciamiento frente a la Falla de Servicios Electr\'onicos del
+        Banco Pichincha,'' Comunicado oficial, oct. 2021.
+        Disponible en:
+        \url{https://www.dpe.gob.ec/pronunciamiento-de-la-defensoria-del-pueblo-frente-a-la-falla-de-servicios-electronicos-del-banco-pichincha/}
+
+  \item Asamblea Nacional del Ecuador,
+        ``Comisi\'on de Desarrollo Econ\'omico ejerce fiscalizaci\'on por
+        inhabilitaci\'on de servicios de instituci\'on financiera,''
+        Noticia institucional, oct. 2021.
+        Disponible en:
+        \url{https://www.asambleanacional.gob.ec/es/noticia/75038-comision-de-desarrollo-economico-ejerce-fiscalizacion}
+
+  \item Banco Pichincha C.A.,
+        ``Transparencia Institucional --- Informaci\'on Financiera,''
+        Portal oficial, 2025.
+        Disponible en: \url{https://www.pichincha.com/transparencia}
+
+\end{enumerate}
+
+\vspace{0.5cm}
+\noindent\textbf{\color{azulP}--- Fuentes period\'isticas (evidencia del caso) ---}
+\vspace{0.2cm}
+
+\begin{enumerate}[leftmargin=0.6cm, label={[\arabic*]},
+                  start=17, itemsep=6pt]
+
+  \item El~Universo,
+        ``Banco Pichincha pide disculpas a usuarios de canales electr\'onicos
+        por fallos que ya duran 72 horas,'' oct. 2021.
+        Disponible en:
+        \url{https://www.eluniverso.com/noticias/economia/fallas-en-canales-electronicos-denuncian-decenas-de-usuarios-de-banco-pichincha-nota/}
+
+  \item El~Universo,
+        ``Se inicia proceso administrativo sancionatorio por incidentes
+        tecnol\'ogicos de Banco Pichincha,'' ago. 2025.
+        Disponible en:
+        \url{https://www.eluniverso.com/noticias/economia/banco-pichincha-superintendencia-de-bancos-sancion-app-incidentes-tecnologicos-ecuador-nota/}
+
+  \item Ecuador~Chequea,
+        ``La aplicaci\'on m\'ovil del Banco Pichincha present\'o problemas de
+        intermitencia,'' may. 2023.
+        Disponible en:
+        \url{https://ecuadorchequea.com/la-aplicacion-movil-del-banco-pichincha-presento-problemas-de-intermitencia/}
+
+  \item Ecuavisa,
+        ``Superintendencia de Bancos pidi\'o informes a entidades financieras
+        por fallas en servicios digitales,'' jul. 2025.
+        Disponible en:
+        \url{https://www.ecuavisa.com/noticias/economia/superintendencia-bancos-informes-fallas-servicios-digitales-CF9601114}
+
+\end{enumerate}
+
+\end{document}
