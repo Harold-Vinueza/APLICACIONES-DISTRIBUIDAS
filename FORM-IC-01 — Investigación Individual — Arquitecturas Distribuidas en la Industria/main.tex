@@ -1,0 +1,277 @@
+%=============================================================
+% FORM-IC-01 Investigacion Individual
+% Arquitecturas Distribuidas en la Industria
+% Autor: Vinueza Sanchez Harold Nicolas
+% Curso: Aplicaciones Distribuidas - Unidad 3
+% Docente: Ing. Guerrero Ulloa Gleiston Ciceron
+% Universidad Tecnica Estatal de Quevedo (UTEQ)
+% Ciclo academico: 2026-2027 PPA
+%=============================================================
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+
+%--- Color institucional ---
+\definecolor{uteqblue}{RGB}{0,70,127}
+\definecolor{uteqgray}{RGB}{90,90,90}
+\definecolor{rowgray}{RGB}{240,244,248}
+
+%--- Formato de secciones ---
+\titleformat{\section}
+  {\normalsize\bfseries\color{uteqblue}}
+  {\thesection.}{0.5em}{}[\vspace{-2pt}{\color{uteqblue}\rule{\linewidth}{0.6pt}}]
+\titlespacing{\section}{0pt}{10pt}{5pt}
+
+%--- Encabezado y pie ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{uteqblue}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\textcolor{uteqblue}{\textbf{UTEQ}} \textcolor{uteqgray}{--- Aplicaciones Distribuidas}}
+\fancyhead[R]{\small\textcolor{uteqgray}{FORM-IC-01 $|$ Unidad 3}}
+\fancyfoot[C]{\small\textcolor{uteqgray}{\thepage}}
+
+%--- Hiperenlaces ---
+\hypersetup{
+  colorlinks=true,
+  linkcolor=uteqblue,
+  citecolor=uteqblue,
+  urlcolor=uteqblue,
+  pdftitle={FORM-IC-01 - Microservicios en Netflix},
+  pdfauthor={Vinueza Sanchez Harold Nicolas}
+}
+
+%=============================================================
+\begin{document}
+%=============================================================
+
+%---------- PORTADA / ENCABEZADO DEL DOCUMENTO ----------
+\noindent
+\colorbox{uteqblue}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+  \vspace{6pt}
+  \centering
+  \textcolor{white}{\large\bfseries
+    Arquitectura de Microservicios en Producci\'on: Caso Netflix}\\[3pt]
+  \textcolor{white!80!uteqblue}{\small
+    FORM-IC-01 --- Investigaci\'on Individual $|$ Unidad 3: Arquitecturas Distribuidas en la Industria}
+  \vspace{6pt}
+}}
+
+\vspace{6pt}
+\noindent
+\begin{tabular}{@{}ll}
+  \textbf{Estudiante:}  & Vinueza S\'anchez Harold Nicol\'as \\
+  \textbf{Docente:}     & Ing. Guerrero Ulloa Gleiston Cicer\'on \\
+  \textbf{Instituci\'on:} & Universidad T\'ecnica Estatal de Quevedo (UTEQ) \\
+  \textbf{Ciclo:}       & Aplicaciones Distribuidas --- 2026--2027 PPA \\
+\end{tabular}
+\vspace{4pt}
+\rule{\linewidth}{0.4pt}
+
+%=============================================================
+\section{Descripci\'on del Caso: Netflix y su Transici\'on a Microservicios}
+
+Netflix es hoy la plataforma de \textit{streaming} de video m\'as grande del mundo, con m\'as
+de 230 millones de suscriptores en m\'as de 190 pa\'ises y picos de tr\'afico que representan
+cerca del 15\,\% del ancho de banda global de Internet. Hasta 2007, toda su infraestructura
+resid\'ia en un sistema monol\'itico alojado en centros de datos propios; la totalidad de la
+l\'ogica de negocio ---reproducci\'on, recomendaciones, facturaci\'on, autenticaci\'on--- estaba
+comprimida en una sola base de c\'odigo que se desplegaba como una unidad indivisible.
+
+En 2008, una corrupci\'on cr\'itica en la base de datos central interrumpi\'o los env\'ios de DVD
+durante tres d\'ias consecutivos, exponiendo de forma contundente la fragilidad del modelo
+centralizado ante fallos puntuales. Este incidente motiv\'o la toma de decisi\'on m\'as relevante
+en la historia de la ingenier\'ia de software de la compa\~n\'ia: migrar progresivamente hacia
+Amazon Web Services (AWS) y descomponer el monolito en \textbf{microservicios}
+independientes. La transici\'on, que demand\'o aproximadamente siete a\~nos, qued\'o pr\'acticamente
+completada hacia 2015~\cite{balalaie2016}.
+
+Hoy, la plataforma opera con m\'as de \textbf{700 microservicios} en producci\'on. Entre los
+m\'as cr\'iticos se encuentran el servicio de recomendaci\'on personalizada, el de codificaci\'on y
+transcodificaci\'on de v\'ideo (plataforma \textit{Cosmos}), el de autenticaci\'on OAuth, el de
+gesti\'on de perfiles y el de facturaci\'on recurrente. Cada uno es propiedad de un equipo
+peque\~no (``two-pizza team'') que gestiona su ciclo de vida completo: dise\~no, desarrollo,
+pruebas, despliegue y monitoreo~\cite{miguel2022}. Esta estructura organizacional,
+conocida como DevOps desentralizado, es una consecuencia directa de la arquitectura
+adoptada~\cite{balalaie2016}.
+
+%=============================================================
+\section{Por qu\'e Eligieron la Arquitectura de Microservicios}
+
+La decisi\'on de adoptar microservicios en Netflix no fue ideol\'ogica sino pragm\'atica, y
+respondi\'o a tres limitaciones estructurales del monolito que se volvieron insostenibles
+con el crecimiento exponencial del servicio:
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic{enumi}.}]
+
+  \item \textbf{L\'imite de escalabilidad horizontal.}
+  En la arquitectura monol\'itica, escalar un \'unico componente (p.~ej., el motor de
+  recomendaciones) implicaba replicar la totalidad del sistema, lo que resultaba en un
+  uso ineficiente de recursos y en costos operativos prohibitivos a escala global~\cite{blinowski2022}.
+
+  \item \textbf{Velocidad de entrega comprometida.}
+  Un cambio m\'inimo en cualquier m\'odulo obligaba a redesplegar la aplicaci\'on completa,
+  con ventanas de mantenimiento superiores a seis horas y tasas de reversi\'on (rollback)
+  elevadas. Los microservicios eliminan este acoplamiento al permitir que cada servicio
+  tenga su propio pipeline de integraci\'on y despliegue continuo (CI/CD)~\cite{balalaie2016}.
+
+  \item \textbf{Riesgo de fallos en cascada.}
+  En un sistema monol\'itico, la falla de un subcomponente no criti\-co pod\'ia derribar la
+  experiencia completa del usuario. Los microservicios permiten aislar dominios de negocio
+  de modo que los fallos se contienen y no se propagan al sistema global; principio
+  formalizado como \textit{bulkhead pattern}~\cite{dragoni2017}.
+
+\end{enumerate}
+
+\noindent
+Adicionalmente, Netflix necesitaba una arquitectura que soportara el ciclo de innovaci\'on
+continua caracter\'istico de la industria del entretenimiento: nuevas caracter\'isticas
+(reproducci\'on sin conexi\'on, co-visualizaci\'on, plan con anuncios) deb\'ian lanzarse en
+semanas, no en meses~\cite{miguel2022}.
+
+%=============================================================
+\section{Beneficios Obtenidos}
+
+La migraci\'on produjo mejoras sustanciales y cuantificables en tres ejes principales:
+
+\medskip
+\noindent\textbf{Escalabilidad independiente y eficiencia de recursos.}
+Cada servicio escala en funci\'on exclusiva de su propia demanda. El servicio de
+codificaci\'on \textit{Cosmos} puede procesar millones de activos multimedia sin incrementar
+los recursos del servicio de autenticaci\'on, que opera con patrones de carga completamente
+distintos. Esto redujo significativamente el costo de infraestructura respecto al modelo
+monol\'itico~\cite{miguel2022}. Estudios emp\'iricos sobre arquitecturas comparadas confirman
+que la escalabilidad granular de los microservicios supera al monolito en escenarios de
+carga heterog\'enea~\cite{blinowski2022}.
+
+\medskip
+\noindent\textbf{Despliegue continuo y autonomia de equipos.}
+La plataforma de Netflix realiza entre 4\,000 y 6\,000 despliegues por d\'ia en producci\'on.
+Cada equipo lleva un servicio de \textit{commit} a producci\'on en pocas horas mediante
+pipelines automatizados. Esta capacidad es habilitada directamente por el desacoplamiento
+arquitect\'onico de los microservicios~\cite{balalaie2016}.
+
+\medskip
+\noindent\textbf{Resiliencia demostrada mediante ingenier\'ia del caos.}
+Netflix dise\~n\'o el \textit{Chaos Monkey}, una herramienta que inyecta fallos aleatorios en
+servicios de producci\'on para validar que el sistema tolera las interrupciones sin
+degradar la experiencia del usuario. Esta pr\'actica, hoy extendida a toda la industria
+bajo el nombre de \textit{chaos engineering}, fue posible precisamente porque los
+microservicios proveen el aislamiento necesario para absorber fallos individuales sin
+propagarlos~\cite{dragoni2017}.
+
+%=============================================================
+\section{Desaf\'ios Encontrados}
+
+La adopci\'on de microservicios introdujo una clase de complejidad inexistente en el monolito
+original. Los principales desaf\'ios documentados en la literatura y confirmados por la
+experiencia de Netflix son:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+
+  \item \textbf{Latencia y sobrecarga de red.} Toda interacci\'on entre servicios que
+  antes era una llamada en memoria se convierte en una petici\'on de red (HTTP/gRPC), lo
+  que introduce latencia medible y requiere estrategias de tolerancia como
+  \textit{circuit breakers}, \textit{timeouts} y \textit{retries}~\cite{dragoni2017}.
+
+  \item \textbf{Observabilidad distribuida.} Con m\'as de 700 servicios, identificar la
+  causa ra\'iz de un error exige rastreo distribuido (\textit{distributed tracing}),
+  correlaci\'on de \textit{logs} entre m\'ultiples instancias y m\'etricas unificadas.
+  Netflix desarrollaron herramientas como \textit{Zipkin} y \textit{Atlas} para cubrir
+  esta necesidad~\cite{balalaie2016}.
+
+  \item \textbf{Consistencia de datos eventual.} Cada microservicio gestiona su propia
+  base de datos, lo que elimina las transacciones ACID globales. Garantizar la
+  consistencia entre servicios exige patrones como \textit{sagas} y mecanismos de
+  compensaci\'on transaccional~\cite{blinowski2022}.
+
+  \item \textbf{Complejidad operacional.} Orquestar el descubrimiento de servicios,
+  balanceo de carga, gesti\'on de secretos y actualizaciones sin tiempo de inactividad
+  en cientos de microservicios demanda una plataforma de infraestructura madura
+  (Kubernetes, Spinnaker, Consul)~\cite{miguel2022}.
+
+\end{itemize}
+
+%=============================================================
+\section{Aplicaci\'on al Proyecto Propio}
+
+Las lecciones del caso Netflix son directamente aplicables al proyecto de la asignatura
+Aplicaciones Distribuidas, que contempla el dise\~no de un \textbf{sistema de gesti\'on
+acad\'emica distribuido}. A partir del an\'alisis del caso, se identifican las siguientes
+decisiones de dise\~no:
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt, label=\textbf{\arabic{enumi}.}]
+
+  \item \textbf{Descomposici\'on por dominio.} Cada funci\'on de negocio ---matr\'icula,
+  calificaciones, notificaciones, autenticaci\'on--- se implementa como un microservicio
+  independiente con su propia base de datos, siguiendo el principio de
+  \textit{bounded context} de Domain-Driven Design~\cite{dragoni2017}.
+
+  \item \textbf{API Gateway centralizado.} Un Gateway \'unico (p.~ej., Kong o AWS API
+  Gateway) recibe todas las peticiones externas, gestiona autenticaci\'on, limitaci\'on de
+  tasa (\textit{rate limiting}) y enrutamiento, simplificando la interfaz del cliente
+  respecto a la complejidad interna del sistema.
+
+  \item \textbf{Comunicaci\'on as\'incrona para operaciones no cr\'iticas.} Procesos como
+  el env\'io de notificaciones o la generaci\'on de reportes PDF se desacoplan del flujo
+  principal mediante un \textit{message broker} (RabbitMQ o Kafka), mejorando la
+  capacidad de respuesta del sistema y su tolerancia a picos de carga~\cite{balalaie2016}.
+
+  \item \textbf{Granularidad controlada.} La lecci\'on m\'as importante del caso Netflix es
+  que los microservicios \textit{demasiado finos} generan una red de dependencias que
+  anula los beneficios del desacoplamiento. Para el proyecto acad\'emico se propone
+  iniciar con 4--5 servicios bien definidos y refinarlos conforme evolucione el
+  sistema~\cite{blinowski2022}.
+
+\end{enumerate}
+
+%=============================================================
+\vspace{6pt}
+{\color{uteqblue}\rule{\linewidth}{0.6pt}}
+
+\begingroup
+\small
+\begin{thebibliography}{9}
+
+\bibitem{balalaie2016}
+A.~Balalaie, A.~Heydarnoori, and P.~Jamshidi,
+``Microservices Architecture Enables DevOps: Migration to a Cloud-Native Architecture,''
+\textit{IEEE Software}, vol.~33, no.~3, pp.~42--52, May/Jun.\ 2016.
+DOI: \href{https://doi.org/10.1109/MS.2016.64}{10.1109/MS.2016.64}
+
+\bibitem{miguel2022}
+F.~S.~Miguel, N.~Mareddy, A.~K.~Moorthy, and X.~Liu,
+``Microservices for Multimedia: Video Encoding,''
+in \textit{Proc.\ 1st ACM Mile-High Video Conf.\ (MHV)}, Denver, CO, USA, 2022.
+DOI: \href{https://doi.org/10.1145/3510450.3517298}{10.1145/3510450.3517298}
+
+\bibitem{dragoni2017}
+N.~Dragoni, S.~Giallorenzo, A.~L.~Lafuente, M.~Mazzara, F.~Montesi,
+R.~Mustafin, and L.~Safina,
+``Microservices: Yesterday, Today, and Tomorrow,''
+in M.~Mazzara and B.~Meyer (Eds.), \textit{Present and Ulterior Software Engineering},
+Springer, Cham, 2017, pp.~195--216.
+DOI: \href{https://doi.org/10.1007/978-3-319-67425-4_12}{10.1007/978-3-319-67425-4\_12}
+
+\bibitem{blinowski2022}
+G.~Blinowski, A.~Ojdowska, and A.~Przyby{\l}ek,
+``Monolithic vs.\ Microservice Architecture: A Performance and Scalability Evaluation,''
+\textit{IEEE Access}, vol.~10, pp.~20357--20374, 2022.
+DOI: \href{https://doi.org/10.1109/ACCESS.2022.3152803}{10.1109/ACCESS.2022.3152803}
+
+\end{thebibliography}
+\endgroup
+
+\end{document}
